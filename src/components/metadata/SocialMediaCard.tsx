@@ -8,8 +8,9 @@ import Image from "next/image";
 import { useMetadataStore } from "@/stores/metadata.store";
 import { ICON_PATHS } from "@/constants/icons";
 import SvgIcon from "../common/SvgIcon";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import SocialLink from "@/types/social.type";
+import Avatar from "../ui/avatar/Avatar";
 
 export default function SocialMediaCard() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -52,7 +53,7 @@ export default function SocialMediaCard() {
                 width={80}
                 height={80}
                 src={companyInformation.logoUrl || "/images/user/user-02.jpg"}
-                alt="user"
+              alt="user"
               />
             </div>
             <div className="order-3 xl:order-2">

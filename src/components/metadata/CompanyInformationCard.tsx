@@ -41,17 +41,6 @@ export default function CompanyInformationCard() {
     [],
   );
 
-  const placeholder = {
-    "name": "VieMind Tech Consultant",
-    "email": "viemind@contact.vn",
-    "phone": "0147852369",
-    "taxId": "2520212423"
-  }
-
-  useEffect(() => {
-    setMetadataStore('companyInformation', placeholder);
-  }, [])
-
   return (
     <>
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">

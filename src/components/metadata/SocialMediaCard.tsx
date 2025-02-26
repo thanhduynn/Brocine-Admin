@@ -42,25 +42,6 @@ export default function SocialMediaCard() {
     [],
   );
 
-  const placeholder: SocialLink[] = [
-    {
-      platform: "facebook",
-      url: "https://www.facebook.com/profile.php?id=61573103499980"
-    },
-    {
-      platform: "linkedin",
-      url: "https://www.linkedin.com/company/viemind-ai-consulting"
-    },
-    {
-      platform: "website",
-      url: "https://viemind.ai/"
-    },
-  ];
-
-  useEffect(() => {
-    setMetadataStore('companyLink', placeholder);
-  }, [])
-
   return (
     <>
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">

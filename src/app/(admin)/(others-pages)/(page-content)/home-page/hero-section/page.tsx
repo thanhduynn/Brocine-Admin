@@ -12,7 +12,7 @@ export default function HomePageHeroSection() {
     imageUrl: "/images/grid-image/image-02.png",
   }
 
-  const { content, setHomeStore } = useHomeStore();
+  const { content, setContent, setHomeStore } = useHomeStore();
 
   useEffect(() => {
     setHomeStore('content', placeholder);
@@ -28,6 +28,12 @@ export default function HomePageHeroSection() {
         <div className="space-y-6">
           <HeroSectionCard 
             key="home-page-hero-card"
+            store={{
+              content: content,
+              setContent: setContent,
+              setStore: setHomeStore,
+            }}
+
           />
           <ResponsiveView 
             key="home-page-hero-view" 

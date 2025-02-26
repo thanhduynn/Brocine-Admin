@@ -3,6 +3,7 @@ interface Company {
   email: string;
   phone: string;
   taxId: string;
+  logoUrl: string;
 }
 
 export default Company;

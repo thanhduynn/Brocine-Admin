@@ -70,7 +70,7 @@ export default function SocialMediaCard() {
               <Image
                 width={80}
                 height={80}
-                src="/images/user/owner.jpg"
+                src={companyInformation.logoUrl || "/images/user/user-02.jpg"}
                 alt="user"
               />
             </div>
@@ -151,7 +151,7 @@ export default function SocialMediaCard() {
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-
+                  <Avatar src={companyInformation.logoUrl} size="xlarge"></Avatar>
                 </div>
               </div>
             </div>

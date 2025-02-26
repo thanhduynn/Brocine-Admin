@@ -34,7 +34,8 @@ export const useMetadataStore = create<MetadataStore>()((set, get) => ({
     email: "company@example.com",
     name: "VieMind",
     phone: "0123456789",
-    taxId: "VN0025412"
+    taxId: "VN0025412",
+    logoUrl: "/images/user/owner.jpg"
   },
   companyLink: [],
   setMetadataStore(key, value) {

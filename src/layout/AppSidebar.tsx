@@ -29,34 +29,34 @@ const navItems: NavItem[] = [
     icon: <BoltIcon />,
     name: "Home Page",
     subItems: [
-      { name: "Hero Section", path: "/#", pro: false },
-      { name: "Highlights", path: "/#", pro: false },
-      { name: "Brands", path: "/#", pro: false },
+      { name: "Hero Section", path: "/home-page/hero-section", pro: false },
+      { name: "Highlights", path: "/home-page/highlights", pro: false },
+      { name: "Brands", path: "/home-page/brands", pro: false },
     ],
   },
   {
     icon: <InfoIcon />,
     name: "About Page",
     subItems: [
-      { name: "Hero Section", path: "/#", pro: false },
-      { name: "Highlights", path: "/#", pro: false },
+      { name: "Hero Section", path: "/about-page/hero-section", pro: false },
+      { name: "Highlights", path: "/about-page/highlights", pro: false },
     ],
   },
   {
     icon: <BoxCubeIcon />,
-    name: "Product Service",
+    name: "Product Services",
     subItems: [
-      { name: "Hero Section", path: "/#", pro: false },
-      { name: "Services", path: "/#", pro: false },
-      { name: "Highlights", path: "/#", pro: false },
+      { name: "Hero Section", path: "/product-services/hero-section", pro: false },
+      { name: "Services", path: "/product-services/services", pro: false },
+      { name: "Highlights", path: "/product-services/highlights", pro: false },
     ],
   },
   {
     icon: <PageIcon />,
     name: "Policies",
     subItems: [
-      { name: "Private Policy", path: "/#", pro: false },
-      { name: "Refund Policy", path: "/#", pro: false },
+      { name: "Private Policy", path: "/policies/private", pro: false },
+      { name: "Refund Policy", path: "/policies/refund", pro: false },
     ],
   },
 ];

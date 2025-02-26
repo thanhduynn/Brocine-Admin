@@ -5,12 +5,21 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useHomeStore } from "@/stores/home.store";
 import HeroSection from "@/types/hero.type";
 
-export default function HeroSectionCard() {
+interface GenericStore {
+  content: HeroSection;
+  setContent: (key: any, value: any) => void;
+  setStore: (key: any, value: any) => void;
+}
+
+interface HeroSectionCardProps {
+  store: GenericStore;
+}
+
+export default function HeroSectionCard({ store }: HeroSectionCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
-  const { content, setContent, setHomeStore } = useHomeStore();
+  const { content, setContent, setStore } = store;
   const [ currentContent, setCurrentContent ] = useState<HeroSection>();
 
   const handleOpen = () => {
@@ -20,7 +29,7 @@ export default function HeroSectionCard() {
 
   const handleClose = () => {
     if (currentContent) {
-      setHomeStore('content', currentContent);
+      setStore('content', currentContent);
       closeModal();
     }
   }

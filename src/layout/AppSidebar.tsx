@@ -6,10 +6,10 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   BoltIcon,
-  BoxCubeIcon, ChevronDownIcon, HorizontaLDots,
+  BoxCubeIcon, ChevronDownIcon, FileIcon, HorizontaLDots,
   InfoIcon,
   ListIcon,
-  PageIcon, TableIcon
+  PageIcon, PaperPlaneIcon, TableIcon
 } from "../icons/index";
 
 type NavItem = {
@@ -26,12 +26,20 @@ const navItems: NavItem[] = [
     path: "/metadata",
   },
   {
-    icon: <BoltIcon />,
+    icon: <PaperPlaneIcon />,
     name: "Home Page",
     subItems: [
       { name: "Hero Section", path: "/home-page/hero-section", pro: false },
       { name: "Highlights", path: "/home-page/highlights", pro: false },
       { name: "Brands", path: "/home-page/brands", pro: false },
+    ],
+  },
+  {
+    icon: <BoltIcon />,
+    name: "Work Page",
+    subItems: [
+      { name: "Categories", path: "/work/categories", pro: false },
+      { name: "Work detail", path: "/work/work-detail", pro: false },
     ],
   },
   {

@@ -1,7 +1,6 @@
 import Address from "@/types/address.type";
 import Company from "@/types/company.type";
 import SocialLink from "@/types/social.type";
-import { url } from "inspector";
 import { create } from 'zustand';
 
 interface MetadataStore {

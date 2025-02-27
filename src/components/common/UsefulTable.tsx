@@ -43,7 +43,7 @@ export default function UsefulTable() {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
               {projectData.map((project) => (
-                <TableRow key={project.id} className="hover:cursor-pointer hover:bg-slate-50">
+                <TableRow key={project.id} className="hover:cursor-pointer hover:bg-slate-200 dark:hover:bg-gray-700">
                   <TableCell className="px-5 py-4 sm:px-6 text-start">
                     <div className="flex items-center gap-3 max-w-72">
                       <div>

@@ -16,6 +16,10 @@ interface WorkStore {
     action: "add" | "update" | "delete", 
     tag: Partial<Tag> & { id: string }
   ) => void;
+  modifyProjectData: (
+    action: "add" | "update" | "delete",
+    project: Project,
+  ) => void;
 };
 
 export const useWorkStore = create<WorkStore>()((set, get) => ({
@@ -53,6 +57,31 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
       }
 
       return state; // Return unchanged state for unknown actions
+    });
+  },
+  modifyProjectData: (action, project) => {
+    set((state) => {
+      if (action === "add") {
+        if (state.projectData.some((t) => t.id === project.id)) {
+          console.warn(`Project with ID ${project.id} already exists!`);
+          return state;
+        }
+        return { projectData: [...state.projectData, project] };
+      }
+
+      if (action === "update") {
+        set({
+          projectData: get().projectData.map((oldProject) =>
+            oldProject.id === project.id ? project : oldProject
+          ),
+        });
+      }
+
+      if (action === "delete") {
+        return { projectData: state.projectData.filter((t) => t.id != project.id) }
+      }
+
+      return state;
     });
   },
 }));

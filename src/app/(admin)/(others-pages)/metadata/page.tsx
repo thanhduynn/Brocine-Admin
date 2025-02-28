@@ -6,45 +6,51 @@ import SocialMediaCard from "@/components/metadata/SocialMediaCard";
 import SocialLink from "@/types/social.type";
 import { useEffect } from "react";
 import { useMetadataStore } from "@/stores/metadata.store";
+import { database } from "../../../../../firebase";
+import { getDoc, doc, collection, getDocs } from "firebase/firestore";
+import Company from "@/types/company.type";
+import Address from "@/types/address.type";
 
 export default function Metadata() {
   const { setMetadataStore } = useMetadataStore();
 
-  const placeholderAddress = {
-    "country": "Vietnam",
-    "city": "Ho Chi Minh",
-    "addressLine": "241A/1 Huynh Van Banh, Phuong 12, Quan Phu Nhuan",
-    "postalCode": "720523",
-  };
-
-  const placeholderLinks: SocialLink[] = [
-    {
-      platform: "facebook",
-      url: "https://www.facebook.com/profile.php?id=61573103499980"
-    },
-    {
-      platform: "linkedin",
-      url: "https://www.linkedin.com/company/viemind-ai-consulting"
-    },
-    {
-      platform: "website",
-      url: "https://viemind.ai/"
-    },
-  ];
-
-  const placeholderInformation = {
-    name: "VieMind Tech Consultant",
-    email: "viemind@contact.vn",
-    phone: "0147852369",
-    taxId: "2520212423",
-    logoUrl: "/images/user/owner.jpg"
-  }
-
   useEffect(() => {
-    setMetadataStore('companyAddress', placeholderAddress);
-    setMetadataStore('companyInformation', placeholderInformation);
-    setMetadataStore('companyLink', placeholderLinks);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    const docRef = doc(database, "brocines", "metadata");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const companyData = docSnap.data() as Company;
+      setMetadataStore('companyInformation', companyData);
+
+      const socialLinkRef = collection(database, "brocines", "metadata", "socialLink");
+      const addressRef = collection(database, "brocines", "metadata", "address");
+
+      const socialLinkSnap = await getDocs(socialLinkRef);
+      const addressSnap = await getDocs(addressRef);
+
+      const addressData = addressSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      const address01 = addressData[0] as Address;
+
+      const socialLinkData = socialLinkSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as SocialLink[];
+
+      setMetadataStore('companyLink', socialLinkData);
+      setMetadataStore('companyAddress', address01);
+    }
+    else {
+      console.log("NOTHING")
+    }
+  };
 
   return (
     <div>

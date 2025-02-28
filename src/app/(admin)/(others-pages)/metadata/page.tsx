@@ -23,7 +23,7 @@ export default function Metadata() {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const companyData = docSnap.data() as Company;
+      const companyData = docSnap.data()['companyInformation'] as Company;
       setMetadataStore('companyInformation', companyData);
 
       const socialLinkRef = collection(database, "brocines", "metadata", "socialLink");

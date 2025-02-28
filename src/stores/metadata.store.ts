@@ -2,6 +2,9 @@ import Address from "@/types/address.type";
 import Company from "@/types/company.type";
 import SocialLink from "@/types/social.type";
 import { create } from 'zustand';
+import { doc, updateDoc } from "firebase/firestore";
+import { database } from "../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_METADATA } from "@/constants/firebase";
 
 interface MetadataStore {
   companyAddress: Address;
@@ -20,6 +23,7 @@ interface MetadataStore {
     value: MetadataStore['companyInformation'][K]
   ) => void;
   setSocialLink: (platform: SocialLink['platform'], newUrl: string) => void;
+  fUpdateCompanyInformation: () => Promise<boolean>;
 }
 
 export const useMetadataStore = create<MetadataStore>()((set, get) => ({
@@ -66,4 +70,18 @@ export const useMetadataStore = create<MetadataStore>()((set, get) => ({
       ),
     }))
   },
+  fUpdateCompanyInformation: async () => {
+    const companyInformationRef = doc(database, FIREBASE_BROSCINE, FIREBASE_METADATA);
+
+    try {
+      await updateDoc(companyInformationRef, {
+        companyInformation: get().companyInformation,
+      })
+      return true;
+    } catch (error) {
+      console.error(error);
+    }
+    
+    return false;
+  }
 }));

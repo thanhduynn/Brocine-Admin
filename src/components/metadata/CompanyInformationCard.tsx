@@ -11,7 +11,7 @@ import Company from "@/types/company.type";
 
 export default function CompanyInformationCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const { companyInformation, setCompanyInformation, setMetadataStore } = useMetadataStore();
+  const { companyInformation, setCompanyInformation, setMetadataStore, fUpdateCompanyInformation } = useMetadataStore();
   const [ currentInformation, setcurrentInformation ] = useState<Company>();
 
   const handleOpen = () => {
@@ -26,11 +26,17 @@ export default function CompanyInformationCard() {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Handle save logic here
     console.log("Saving changes...");
-    console.log(companyInformation);
-    closeModal();
+    
+    if (await fUpdateCompanyInformation()) {
+      alert("Update successfully!");
+      closeModal();
+    } else {
+      alert("UPDATED FAIL!");
+      return;
+    }
   };
 
   const handleChangeInput = useCallback(
@@ -122,7 +128,7 @@ export default function CompanyInformationCard() {
               Update your details to keep your profile up-to-date.
             </p>
           </div>
-          <form className="flex flex-col">
+          <div className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
@@ -154,7 +160,7 @@ export default function CompanyInformationCard() {
                 Save Changes
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </Modal>
     </>

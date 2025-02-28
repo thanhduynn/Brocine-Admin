@@ -1,42 +1,30 @@
 "use client"
 import CategoryCard from "@/components/work/CategoryCard";
-import { GLOBAL_WORK_TYPES } from "@/constants/types";
 import { useWorkStore } from "@/stores/work.store";
 import Tag from "@/types/tag.type";
 import { useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { database } from "../../../../../../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_CATEGORIES, FIREBASE_WORK } from "@/constants/firebase";
 
 export default function WorkCategories() {
   const {setWorkStore} = useWorkStore();
 
-  const placeholder: Tag[] = [
-    {
-      id: "1",
-      tagName: GLOBAL_WORK_TYPES.brandingFilm,
-    },
-    {
-      id: "2",
-      tagName: GLOBAL_WORK_TYPES.mv,
-    },
-    {
-      id: "3",
-      tagName: GLOBAL_WORK_TYPES.docs,
-    },
-    {
-      id: "4",
-      tagName: GLOBAL_WORK_TYPES.talkshow,
-    },
-    {
-      id: "5",
-      tagName: GLOBAL_WORK_TYPES.tvc,
-    },
-    {
-      id: "6",
-      tagName: GLOBAL_WORK_TYPES.event,
-    },
-  ]
+  const fetchData = async () => {
+    const tagRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_CATEGORIES);
+    const tagSnap = await getDocs(tagRef);
+
+    const tagData = tagSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Tag[];
+
+    console.log(tagData);
+    setWorkStore('tagData', tagData);
+  };
 
   useEffect(() => {
-    setWorkStore('tagData', placeholder)
+    fetchData();
   }, [])
 
   return (

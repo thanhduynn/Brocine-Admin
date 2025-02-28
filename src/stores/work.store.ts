@@ -1,6 +1,9 @@
 import Project from "@/types/project.type.";
 import Tag from "@/types/tag.type";
 import { create } from "zustand";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { database } from "../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_CATEGORIES, FIREBASE_WORK } from "@/constants/firebase";
 
 interface WorkStore {
   projectData: Project[];
@@ -20,6 +23,8 @@ interface WorkStore {
     action: "add" | "update" | "delete",
     project: Project,
   ) => void;
+  fUpdateTagData: (newTag: Tag) => Promise<boolean>;
+  fAddTagData: (newTagName: string) => Promise<string | null>;
 };
 
 export const useWorkStore = create<WorkStore>()((set, get) => ({
@@ -84,4 +89,30 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
       return state;
     });
   },
+  fUpdateTagData: async (newTag) => {
+    const tagRef = doc(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_CATEGORIES, newTag.id);
+
+    try {
+      await updateDoc(tagRef, {
+        tagName: newTag.tagName,
+      });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+  fAddTagData: async (newTagName) => {
+    const categoryCollectionRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_CATEGORIES);
+
+    try {
+      const tagRef = await addDoc(categoryCollectionRef, {
+        tagName: newTagName,
+      });
+      return tagRef.id;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }));

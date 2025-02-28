@@ -11,7 +11,7 @@ import Button from "../ui/button/Button";
 import TagType from "@/types/tag.type";
 
 export default function CategoryCard() {
-  const { tagData, modifyTag } = useWorkStore();
+  const { tagData, modifyTag, fUpdateTagData, fAddTagData } = useWorkStore();
   const { isOpen, openModal, closeModal } = useModal();
 
   const [isCreate, setIsCreate] = useState(false);
@@ -44,23 +44,39 @@ export default function CategoryCard() {
     setWantToDelete(false);
   };
 
-  const handleSaveNewType = () => {
+  const handleSaveNewType = async () => {
     if (newType === "") {
       alert("Cannot add a null into database!");
       return;
     }
-    modifyTag("add", {
-      id: "12",
-      tagName: newType,
-    });
-    closeModal();
-    setNewType("");
+
+    const newId = await fAddTagData(newType);
+
+    if (newId !== null) {
+      alert("MODIFIED TAG SUCCESSFULLY");
+      modifyTag("add", {
+        id: newId,
+        tagName: newType,
+      });
+      closeModal();
+      setNewType("");
+    } else {
+      alert("FAILED TO MODIFY TAG!");
+      return;
+    }
+
   };
 
-  const handleUpdate = () => {
-    modifyTag("update", modifyType);
-    closeModal();
-    setWantToDelete(false);
+  const handleUpdate = async () => {
+    if(await fUpdateTagData(modifyType)) {
+      alert("Modified successfully!");
+      modifyTag("update", modifyType);
+      closeModal();
+      setWantToDelete(false);
+    } else {
+      alert("MODIFIED FAIL!");
+      setWantToDelete(false);
+    }
   };
 
   const handleDelete = () => {

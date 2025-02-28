@@ -5,6 +5,10 @@ import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
 import React from "react";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminLayout({
   children,
@@ -19,6 +23,38 @@ export default function AdminLayout({
     : isExpanded || isHovered
     ? "lg:ml-[290px]"
     : "lg:ml-[90px]";
+
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Track loading state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log("Checking authentication...");
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is authenticated:", user);
+        setIsAuthenticated(true);
+      } else {
+        console.log("No user found, redirecting to /signin...");
+        setIsAuthenticated(false);
+        router.replace("/signin");
+      }
+      setIsCheckingAuth(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="h-screen flex justify-center items-center bg-gray-900">
+        <p className="text-white text-lg">Checking authentication...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen xl:flex">

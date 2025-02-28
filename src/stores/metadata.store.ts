@@ -24,16 +24,17 @@ interface MetadataStore {
 
 export const useMetadataStore = create<MetadataStore>()((set, get) => ({
   companyAddress: {
-    addressLine: "241A/1 Huynh Van Banh, Phuong 12, Quan Phu Nhuan",
-    city: "Ho Chi Minh",
-    country: "Vietnam",
-    postalCode: "700000"
+    id: "null",
+    addressLine: "null",
+    city: "null",
+    country: "null",
+    postalCode: "null"
   },
   companyInformation: {
-    email: "company@example.com",
-    name: "VieMind",
-    phone: "0123456789",
-    taxId: "VN0025412",
+    email: "null",
+    name: "null",
+    phone: "null",
+    taxId: "null",
     logoUrl: "/images/user/owner.jpg"
   },
   companyLink: [],

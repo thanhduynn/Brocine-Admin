@@ -5,11 +5,34 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useCallback, useState } from "react";
+import { useAuthStore } from "@/stores/auth.store";
+import { useRouter } from "next/navigation";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const { fSignIn, signInForm, setSignInForm } = useAuthStore();
+  const router = useRouter();
+
+  const handleChangeInput = useCallback(
+    (e: { target: { name: any; value: any } }) => {
+      const { name, value } = e.target;
+      setSignInForm(name, value);
+    },
+    [],
+  );
+
+  const handleSignIn = async () => {
+    const success = await fSignIn();
+
+    if (success) {
+      router.push("/");
+    } else {
+      alert("Email or password is incorrect!");
+      return;
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -80,7 +103,7 @@ export default function SignInForm() {
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" type="email" />
+                  <Input placeholder="info@gmail.com" type="email" name="email" onChange={handleChangeInput} value={signInForm.email}/>
                 </div>
                 <div>
                   <Label>
@@ -88,8 +111,11 @@ export default function SignInForm() {
                   </Label>
                   <div className="relative">
                     <Input
+                      name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      onChange={handleChangeInput}
+                      value={signInForm.password}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -112,11 +138,11 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
+                  <Button className="w-full" size="sm" onClick={handleSignIn}>
                     Sign in
                   </Button>
                 </div>
-            </div>
+              </div>
           </div>
         </div>
       </div>

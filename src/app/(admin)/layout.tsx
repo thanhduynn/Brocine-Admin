@@ -9,6 +9,7 @@ import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LOCAL_STORAGE_AUTH } from "@/constants/name";
 
 export default function AdminLayout({
   children,
@@ -24,8 +25,12 @@ export default function AdminLayout({
     ? "lg:ml-[290px]"
     : "lg:ml-[90px]";
 
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Track loading state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(
+    localStorage.getItem(LOCAL_STORAGE_AUTH) === "true" ? false : true
+  ); // Track loading state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    localStorage.getItem(LOCAL_STORAGE_AUTH) === "true" ? true : false
+  );
   const router = useRouter();
 
   useEffect(() => {

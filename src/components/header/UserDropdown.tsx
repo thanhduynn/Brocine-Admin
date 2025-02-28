@@ -6,6 +6,7 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
 import { useRouter } from "next/navigation";
+import { LOCAL_STORAGE_AUTH } from "@/constants/name";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,7 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
   const handleLogOut = async () => {
     try {
       await signOut(auth);
+      localStorage.removeItem(LOCAL_STORAGE_AUTH);
       router.push("/signin"); // Redirect to login page after logout
     } catch (error) {
       console.error("Logout failed:", error);

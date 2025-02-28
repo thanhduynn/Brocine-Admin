@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "next/navigation";
+import { LOCAL_STORAGE_AUTH } from "@/constants/name";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +27,7 @@ export default function SignInForm() {
     const success = await fSignIn();
 
     if (success) {
+      localStorage.setItem(LOCAL_STORAGE_AUTH, "true");
       router.push("/");
     } else {
       alert("Email or password is incorrect!");

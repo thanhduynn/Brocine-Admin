@@ -1,3 +1,4 @@
+import Project from "@/types/project.type.";
 import {
   Table,
   TableBody,
@@ -8,6 +9,10 @@ import {
 
 import { useWorkStore } from "@/stores/work.store";
 
+interface UsefulTableProps {
+  onSelect: (project: Project) => void;
+};
+
 const projectHeader = [
   "Project",
   "Type",
@@ -17,7 +22,7 @@ const projectHeader = [
   "Director",
 ];
 
-export default function UsefulTable() {
+export default function UsefulTable({onSelect}: UsefulTableProps) {
   const { projectData } = useWorkStore();
 
   return (
@@ -43,7 +48,12 @@ export default function UsefulTable() {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
               {projectData.map((project) => (
-                <TableRow key={project.id} className="hover:cursor-pointer hover:bg-slate-200 dark:hover:bg-gray-700">
+                <TableRow 
+                  key={project.id} 
+                  onClick={() => {
+                    onSelect(project);
+                  }} 
+                  className="hover:cursor-pointer hover:bg-slate-200 dark:hover:bg-gray-700">
                   <TableCell className="px-5 py-4 sm:px-6 text-start">
                     <div className="flex items-center gap-3 max-w-72">
                       <div>

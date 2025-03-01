@@ -36,6 +36,8 @@ export default function AdminLayout({
     const storedAuth = localStorage.getItem(LOCAL_STORAGE_AUTH);
     if (storedAuth) {
       setIsAuthenticated(storedAuth === "true");
+      setIsCheckingAuth(false);
+      return;
     }
 
     // Subscribe to authentication state changes

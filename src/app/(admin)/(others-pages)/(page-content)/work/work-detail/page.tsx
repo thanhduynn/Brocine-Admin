@@ -169,28 +169,52 @@ export default function WorkWorkDetail() {
     clearState();
   };
 
-  const handleSave = async () => {
-    let projectPayload: Project = {
-      "id": "null",
-      "title": title,
-      "subtitle": subTitle,
-      "type": type,
-      "videoUrl": videoUrl,
-      "brand": brand,
-      "productionCompany": productionCompany,
-      "execusiveProducer": execusiveProducer,
-      "director": splitDirector(),
-    }
-
-    const newProjectId = await fAddProjectData(projectPayload);
+  const handleCreate = async () => {
+    let { id, ...projectData} = project;
+    
+    const projectPayload = {
+      ...projectData,
+      ["director"]: splitDirector(),
+      ["type"]: type,
+    };
+    
+    const newProjectId = await fAddProjectData({id, ...projectPayload});
 
     if (newProjectId !== null) {
-      projectPayload.id = newProjectId;
-      modifyProjectData("add", projectPayload);
+      id = newProjectId;
+      modifyProjectData("add", { id, ...projectPayload});
       alert("Project created successfully!");
       handleClose();
     } else {
       alert("Failed to create project!");
+      return;
+    }
+  };
+
+  const handleUpdate = async () => {
+    const projectPayload:Project = {
+      ...project,
+      director: splitDirector(),
+      type: type,
+    };
+    
+    if (await fUpdateProjectData(projectPayload)) {
+      modifyProjectData("update", projectPayload);
+      alert("Updated project successfully!");
+      handleClose();
+    } else {
+      alert("Failed to update project!");
+      return;
+    }
+  };
+
+  const handleDelete = async () => {
+    if (project.id != "null" && await fDeleteProjectData(project.id)) {
+      alert("Deleted project successfully!");
+      modifyProjectData("delete", project);
+      handleClose();
+    } else {
+      alert("Failed to delete project!");
       return;
     }
   };
@@ -313,8 +337,8 @@ export default function WorkWorkDetail() {
               </Button>
               {!wantToDelete ? 
                 <Button size="sm" onClick={project.id == "null" ? handleCreate : handleUpdate}>
-                Save Changes
-              </Button>
+                  Save Changes
+                </Button>
               : 
                 <Button size="sm" variant="danger" onClick={handleDelete}>
                   Delete

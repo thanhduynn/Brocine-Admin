@@ -78,11 +78,11 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
       }
 
       if (action === "update") {
-        set({
-          projectData: get().projectData.map((oldProject) =>
+        return {
+          projectData: state.projectData.map((oldProject) =>
             oldProject.id === project.id ? project : oldProject
           ),
-        });
+        };
       }
 
       if (action === "delete") {
@@ -152,5 +152,5 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
       console.error(error);
       return false;
     }
-  }
+  } 
 }));

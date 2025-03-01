@@ -25,17 +25,20 @@ export default function AdminLayout({
     ? "lg:ml-[290px]"
     : "lg:ml-[90px]";
 
-  const [isCheckingAuth, setIsCheckingAuth] = useState(
-    localStorage.getItem(LOCAL_STORAGE_AUTH) === "true" ? false : true
-  ); // Track loading state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    localStorage.getItem(LOCAL_STORAGE_AUTH) === "true" ? true : false
-  );
+  // State for authentication status and loading state
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Default to true while checking auth
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null to handle initial loading state
+
   const router = useRouter();
 
+  // Use useEffect to handle client-side logic like accessing localStorage
   useEffect(() => {
-    console.log("Checking authentication...");
+    const storedAuth = localStorage.getItem(LOCAL_STORAGE_AUTH);
+    if (storedAuth) {
+      setIsAuthenticated(storedAuth === "true");
+    }
 
+    // Subscribe to authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User is authenticated:", user);
@@ -45,12 +48,14 @@ export default function AdminLayout({
         setIsAuthenticated(false);
         router.replace("/signin");
       }
-      setIsCheckingAuth(false);
+      setIsCheckingAuth(false); // We are done checking authentication
     });
 
+    // Cleanup on component unmount
     return () => unsubscribe();
   }, [router]);
 
+  // Render loading state while checking auth
   if (isCheckingAuth) {
     return (
       <div className="h-screen flex justify-center items-center bg-gray-900">
@@ -59,6 +64,7 @@ export default function AdminLayout({
     );
   }
 
+  // If not authenticated, don't render the main content
   if (!isAuthenticated) return null;
 
   return (

@@ -23,7 +23,8 @@ export default function SmartImage({ image, docRef }: SmartImageProps) {
       } else {
         await deleteDoc(docRef);
         modifyHighlights("delete", image);
-      alert("Deleted image successfully!");
+        alert("Deleted image successfully!");
+      }
     } catch (error) {
       console.error(error);
       alert("Failed to delete image!");
@@ -32,23 +33,21 @@ export default function SmartImage({ image, docRef }: SmartImageProps) {
 
   return (
     <div
-      className="relative group overflow-hidden rounded-lg border border-gray-300"
+      className="relative group overflow-hidden rounded-lg border border-gray-300 flex justify-center h-60"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {/* Image with onError fallback */}
       <img
-        src={error ? "/images/grid-image/image-04.png" : imageUrl}
+        src={error ? "/images/grid-image/image-01.png" : image.imageUrl}
         alt="Preview"
-        className="w-full h-full object-cover"
+        className="object-cover w-full"
         onError={() => setError(true)}
-        width={338}
-        height={192}
+        loading="lazy"
       />
 
       {/* Buttons (hidden until hover) */}
       {hover && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center space-x-2">
+        <div className="absolute inset-0 bg-black/50 dark:bg-white/50 flex items-center justify-center space-x-2">
           {/* View button */}
           <button
             className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 transition"

@@ -21,6 +21,7 @@ export default function ImageGrid({images, collectionName}: ImageGridProps) {
           />
         );
       })}
+      {images.length === 0 ? <div className="dark:text-white">There is nothing at all!</div> : <></>}
     </div>
   );
 }

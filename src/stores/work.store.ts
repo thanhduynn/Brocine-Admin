@@ -1,7 +1,7 @@
 import Project from "@/types/project.type.";
 import Tag from "@/types/tag.type";
 import { create } from "zustand";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { database } from "../../firebase";
 import { FIREBASE_BROSCINE, FIREBASE_CATEGORIES, FIREBASE_PROJECTS, FIREBASE_WORK } from "@/constants/firebase";
 
@@ -27,6 +27,7 @@ interface WorkStore {
   fAddTagData: (newTagName: string) => Promise<string | null>;
   fAddProjectData: (newProject: Project) => Promise<string | null>;
   fUpdateProjectData: (newProject: Project) => Promise<boolean>;
+  fDeleteProjectData: (projectId: string) => Promise<boolean>;
 };
 
 export const useWorkStore = create<WorkStore>()((set, get) => ({
@@ -121,7 +122,7 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
     const projectsCollectionRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_PROJECTS);
 
     try {
-      const {id, ...projectData} = newProject
+      const {id, ...projectData} = newProject;
       const projectRef = await addDoc(projectsCollectionRef, projectData);
 
       return projectRef.id;
@@ -136,6 +137,16 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
 
     try {
       await updateDoc(projectRef, projectData);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+  fDeleteProjectData: async (projectId) => {
+    try {
+      const projectRef = doc(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_PROJECTS, projectId);
+      await deleteDoc(projectRef);
       return true;
     } catch (error) {
       console.error(error);

@@ -3,7 +3,7 @@ import Tag from "@/types/tag.type";
 import { create } from "zustand";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { database } from "../../firebase";
-import { FIREBASE_BROSCINE, FIREBASE_CATEGORIES, FIREBASE_WORK } from "@/constants/firebase";
+import { FIREBASE_BROSCINE, FIREBASE_CATEGORIES, FIREBASE_PROJECTS, FIREBASE_WORK } from "@/constants/firebase";
 
 interface WorkStore {
   projectData: Project[];
@@ -25,6 +25,8 @@ interface WorkStore {
   ) => void;
   fUpdateTagData: (newTag: Tag) => Promise<boolean>;
   fAddTagData: (newTagName: string) => Promise<string | null>;
+  fAddProjectData: (newProject: Project) => Promise<string | null>;
+  fUpdateProjectData: (newProject: Project) => Promise<boolean>;
 };
 
 export const useWorkStore = create<WorkStore>()((set, get) => ({
@@ -113,6 +115,31 @@ export const useWorkStore = create<WorkStore>()((set, get) => ({
     } catch (error) {
       console.log(error);
       return null;
+    }
+  },
+  fAddProjectData: async (newProject) => {
+    const projectsCollectionRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_PROJECTS);
+
+    try {
+      const {id, ...projectData} = newProject
+      const projectRef = await addDoc(projectsCollectionRef, projectData);
+
+      return projectRef.id;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+  fUpdateProjectData: async (newProject) => {
+    const { id, ...projectData } = newProject;
+    const projectRef = doc(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_PROJECTS, id);
+
+    try {
+      await updateDoc(projectRef, projectData);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
   }
 }));

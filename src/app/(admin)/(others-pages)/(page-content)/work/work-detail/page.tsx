@@ -1,8 +1,18 @@
 "use client"
 import UsefulTable from "@/components/common/UsefulTable";
+import Input from "@/components/form/input/InputField";
+import Label from "@/components/form/Label";
+import Button from "@/components/ui/button/Button";
+import { Modal } from "@/components/ui/modal";
 import { useWorkStore } from "@/stores/work.store";
 import Project from "@/types/project.type.";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useModal } from "@/hooks/useModal";
+import Select from "@/components/form/Select";
+import { collection, getDocs } from "firebase/firestore";
+import { database } from "../../../../../../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_CATEGORIES, FIREBASE_PROJECTS, FIREBASE_WORK } from "@/constants/firebase";
+import Tag from "@/types/tag.type";
 
 const projectData: Project[] = [
   {
@@ -14,9 +24,7 @@ const projectData: Project[] = [
     "brand": "Tech Corp",
     "productionCompany": "Vision Films",
     "execusiveProducer": "Bob Smith",
-    "director": [
-      { "id": "1", "name": "Alice Johnson", "role": "Director", "imageUrl": "/images/user/user-10.jpg" }
-    ]
+    "director": ["Alice Johnson", "Charlie Davis",]
   },
   {
     "id": "102",
@@ -27,9 +35,7 @@ const projectData: Project[] = [
     "brand": "Future Industries",
     "productionCompany": "Nova Studios",
     "execusiveProducer": "Bob Smith",
-    "director": [
-      { "id": "3", "name": "Charlie Davis", "role": "Director", "imageUrl": "/images/user/user-07.jpg" }
-    ]
+    "director": ["Alice Johnson", "Charlie Davis",]
   },
   {
     "id": "103",
@@ -40,9 +46,7 @@ const projectData: Project[] = [
     "brand": "NextGen",
     "productionCompany": "Skyline Pictures",
     "execusiveProducer": "Bob Smith",
-    "director": [
-      { "id": "4", "name": "Diana Lee", "role": "Director", "imageUrl": "/images/user/user-14.jpg" }
-    ]
+    "director": ["Alice Johnson", "Charlie Davis",]
   },
   {
     "id": "104",
@@ -53,10 +57,7 @@ const projectData: Project[] = [
     "brand": "InnovateX",
     "productionCompany": "Cinematic Arts",
     "execusiveProducer": "Bob Smith",
-    "director": [
-      { "id": "2", "name": "Bob Smith", "role": "Executive Producer", "imageUrl": "/images/user/user-01.jpg" },
-      { "id": "5", "name": "Ethan White", "role": "Director", "imageUrl": "/images/user/user-03.jpg" }
-    ]
+    "director": ["Alice Johnson", "Charlie Davis",]
   },
   {
     "id": "105",
@@ -67,19 +68,110 @@ const projectData: Project[] = [
     "brand": "StoryWorks",
     "productionCompany": "Luminary Studios",
     "execusiveProducer": "Bob Smith",
-    "director": [
-      { "id": "1", "name": "Alice Johnson", "role": "Director", "imageUrl": "/images/user/user-02.jpg" },
-      { "id": "3", "name": "Charlie Davis", "role": "Director", "imageUrl": "/images/user/user-03.jpg" }
-    ]
+    "director": ["Alice Johnson", "Charlie Davis",]
   }
 ];
 
+const defaultProject: Project = {
+  "id": "null",
+  "title": "",
+  "subtitle": "",
+  "type": "",
+  "videoUrl": "",
+  "brand": "",
+  "productionCompany": "",
+  "execusiveProducer": "",
+  "director": [],
+};
+
 export default function WorkWorkDetail() {
-  const { setWorkStore } = useWorkStore();
+  const { tagData, setWorkStore, fAddProjectData, modifyProjectData } = useWorkStore();
+  const { isOpen, openModal, closeModal } = useModal();
+
+  const [title, setTitle] = useState("");
+  const [subTitle, setSubTitle] = useState("");
+  const [type, setType] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [brand, setBrand] = useState("");
+  const [productionCompany, setProductionCompany] = useState("");
+  const [execusiveProducer, setExecusiveProducer] = useState("");
+  const [director, setDirector] = useState("");
+
+  const fetchData = async () => {
+    const tagRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_CATEGORIES);
+    const projectRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_PROJECTS);
+    const tagSnap = await getDocs(tagRef);
+    const projectSnap = await getDocs(projectRef);
+
+    const tagData = tagSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Tag[];
+
+    const projectData = projectSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Project[];
+
+    console.log(tagData);
+    setWorkStore('tagData', tagData);
+    setWorkStore('projectData', projectData);
+  };
+
+  const handleOpen = () => {
+    openModal();
+  };
+
+  const clearState = () => {
+    setTitle("");
+    setSubTitle("");
+    setType("");
+    setVideoUrl("");
+    setBrand("");
+    setProductionCompany("");
+    setExecusiveProducer("");
+    setDirector("");
+  };
+
+  const splitDirector = () => {
+    return director.split(",").map((name) => name.trim());
+  }
+
+  const handleClose = () => {
+    closeModal();
+    clearState();
+  };
+
+  const handleSave = async () => {
+    let projectPayload: Project = {
+      "id": "null",
+      "title": title,
+      "subtitle": subTitle,
+      "type": type,
+      "videoUrl": videoUrl,
+      "brand": brand,
+      "productionCompany": productionCompany,
+      "execusiveProducer": execusiveProducer,
+      "director": splitDirector(),
+    }
+
+    const newProjectId = await fAddProjectData(projectPayload);
+
+    if (newProjectId !== null) {
+      projectPayload.id = newProjectId;
+      modifyProjectData("add", projectPayload);
+      alert("Project created successfully!");
+      handleClose();
+    } else {
+      alert("Failed to create project!");
+      return;
+    }
+  };
   
   useEffect(() => {
+    fetchData();
     setWorkStore("projectData", projectData);
-  }, [])
+  }, []);
 
   return (
     <div>
@@ -89,8 +181,96 @@ export default function WorkWorkDetail() {
         </h3>
         <div className="space-y-6">
           <UsefulTable />
+          <div className="flex justify-end">
+            <button
+              onClick={handleOpen}
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12 4.5a.75.75 0 0 1 .75.75V11.25H19.5a.75.75 0 0 1 0 1.5H12.75V19.5a.75.75 0 0 1-1.5 0V12.75H4.5a.75.75 0 0 1 0-1.5H11.25V5.25A.75.75 0 0 1 12 4.5z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Add a new project
+            </button>
+          </div>
         </div>
       </div>
+      <Modal isOpen={isOpen} onClose={handleClose} className="max-w-[700px] m-4">
+        <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
+          <div className="px-2 pr-14">
+            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+              Create a new project
+            </h4>
+            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+              Let the world about your work!
+            </p>
+          </div>
+          <form className="flex flex-col">
+            <div className="px-2 overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <div>
+                  <Label>Title</Label>
+                  <Input name="title" type="text" onChange={(e) => setTitle(e.target.value)} value={title}/>
+                </div>
+
+                <div>
+                  <Label>Subtitle</Label>
+                  <Input name="subtitle" type="text" onChange={(e) => setSubTitle(e.target.value)} value={subTitle}/>
+                </div>
+
+                <div>
+                  <Label>Type</Label>
+                  <Select
+                    options={tagData.map((tag) => ({
+                      value: tag.tagName,
+                      label: tag.tagName,
+                    }))}
+                    placeholder="Select an option"
+                    onChange={setType}
+                    className="dark:bg-dark-900"
+                  />
+                </div>
+                <div>
+                  <Label>Video URL</Label>
+                  <Input name="videoUrl" type="text" onChange={(e) => setVideoUrl(e.target.value)} value={videoUrl}/>
+                </div>
+                <div>
+                  <Label>Brand</Label>
+                  <Input name="brand" type="text" onChange={(e) => setBrand(e.target.value)} value={brand}/>
+                </div>
+                <div>
+                  <Label>Prod. Company</Label>
+                  <Input name="productionCompany" type="text" onChange={(e) => setProductionCompany(e.target.value)} value={productionCompany}/>
+                </div>
+                <div>
+                  <Label>Exec. Producer</Label>
+                  <Input name="execusiveProducer" type="text" onChange={(e) => setExecusiveProducer(e.target.value)} value={execusiveProducer}/>
+                </div>
+                <div>
+                  <Label>Director</Label>
+                  <Input name="director" type="text" onChange={(e) => setDirector(e.target.value)} value={director}/>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+              <Button size="sm" variant="outline" onClick={handleClose}>
+                Close
+              </Button>
+              <Button size="sm" onClick={handleSave}>
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -85,7 +85,7 @@ const defaultProject: Project = {
 };
 
 export default function WorkWorkDetail() {
-  const { tagData, setWorkStore, fAddProjectData, modifyProjectData } = useWorkStore();
+  const { tagData, setWorkStore, fAddProjectData, fUpdateProjectData, fDeleteProjectData, modifyProjectData } = useWorkStore();
   const { isOpen, openModal, closeModal } = useModal();
 
   const [title, setTitle] = useState("");
@@ -96,6 +96,9 @@ export default function WorkWorkDetail() {
   const [productionCompany, setProductionCompany] = useState("");
   const [execusiveProducer, setExecusiveProducer] = useState("");
   const [director, setDirector] = useState("");
+  const [wantToDelete, setWantToDelete] = useState(true);
+
+  let [project, setProject] = useState<Project>(defaultProject);
 
   const fetchData = async () => {
     const tagRef = collection(database, FIREBASE_BROSCINE, FIREBASE_WORK, FIREBASE_CATEGORIES);
@@ -119,6 +122,7 @@ export default function WorkWorkDetail() {
   };
 
   const handleOpen = () => {
+    setWantToDelete(false);
     openModal();
   };
 
@@ -133,12 +137,35 @@ export default function WorkWorkDetail() {
     setDirector("");
   };
 
+  const handleChangeInput = useCallback(
+    (e: { target: { name: any; value: any } }) => {
+      const { name, value } = e.target;
+      if (project !== null) {
+        const updatedProject = {
+          ...project,
+          [name as keyof Project]: value,
+        };
+
+        console.log(name, value);
+
+        setProject(updatedProject);
+
+        if (project.id != "null") {
+          setWantToDelete(false);
+        }
+      }
+    },
+    [project],
+  );
+
   const splitDirector = () => {
     return director.split(",").map((name) => name.trim());
   }
 
   const handleClose = () => {
     closeModal();
+    setProject(defaultProject);
+    setWantToDelete(true);
     clearState();
   };
 
@@ -170,8 +197,15 @@ export default function WorkWorkDetail() {
   
   useEffect(() => {
     fetchData();
-    setWorkStore("projectData", projectData);
   }, []);
+
+  useEffect(() => {
+    if (project !== null && project.id != "null") {
+      setType(project.type);
+      setDirector(project.director.join(", "));
+      openModal();
+    }
+  }, [project?.id]);
 
   return (
     <div>
@@ -180,7 +214,7 @@ export default function WorkWorkDetail() {
           Work - Work detail
         </h3>
         <div className="space-y-6">
-          <UsefulTable />
+          <UsefulTable onSelect={setProject}/>
           <div className="flex justify-end">
             <button
               onClick={handleOpen}
@@ -207,23 +241,23 @@ export default function WorkWorkDetail() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Create a new project
+              {project.id != "null" ? "Project controller" : "Create a new project"}
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Let the world about your work!
+              {project.id != "null" ? "Change the text to edit, or proceed with deletion." : "Let the world about your work!"}
             </p>
           </div>
-          <form className="flex flex-col">
+          <div className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
                   <Label>Title</Label>
-                  <Input name="title" type="text" onChange={(e) => setTitle(e.target.value)} value={title}/>
+                  <Input name="title" type="text" onChange={handleChangeInput} value={project?.title}/>
                 </div>
 
                 <div>
                   <Label>Subtitle</Label>
-                  <Input name="subtitle" type="text" onChange={(e) => setSubTitle(e.target.value)} value={subTitle}/>
+                  <Input name="subtitle" type="text" onChange={handleChangeInput} value={project?.subtitle}/>
                 </div>
 
                 <div>
@@ -234,29 +268,42 @@ export default function WorkWorkDetail() {
                       label: tag.tagName,
                     }))}
                     placeholder="Select an option"
-                    onChange={setType}
+                    onChange={(value) => {
+                      setType(value);
+                      if (project.id != "null") {
+                        setWantToDelete(false);
+                      }
+                    }}
                     className="dark:bg-dark-900"
+                    defaultValue={type != "" ? type : ""}
                   />
                 </div>
                 <div>
                   <Label>Video URL</Label>
-                  <Input name="videoUrl" type="text" onChange={(e) => setVideoUrl(e.target.value)} value={videoUrl}/>
+                  <Input name="videoUrl" type="text" onChange={handleChangeInput} value={project?.videoUrl}/>
                 </div>
                 <div>
                   <Label>Brand</Label>
-                  <Input name="brand" type="text" onChange={(e) => setBrand(e.target.value)} value={brand}/>
+                  <Input name="brand" type="text" onChange={handleChangeInput} value={project?.brand}/>
                 </div>
                 <div>
                   <Label>Prod. Company</Label>
-                  <Input name="productionCompany" type="text" onChange={(e) => setProductionCompany(e.target.value)} value={productionCompany}/>
+                  <Input name="productionCompany" type="text" onChange={handleChangeInput} value={project?.productionCompany}/>
                 </div>
                 <div>
                   <Label>Exec. Producer</Label>
-                  <Input name="execusiveProducer" type="text" onChange={(e) => setExecusiveProducer(e.target.value)} value={execusiveProducer}/>
+                  <Input name="execusiveProducer" type="text" onChange={handleChangeInput} value={project?.execusiveProducer}/>
                 </div>
                 <div>
                   <Label>Director</Label>
-                  <Input name="director" type="text" onChange={(e) => setDirector(e.target.value)} value={director}/>
+                  <Input name="director" type="text" onChange={(e) => {
+                      setDirector(e.target.value);
+                      if (project.id != "null") {
+                        setWantToDelete(false);
+                      }
+                    }} 
+                    value={director}
+                  />
                 </div>
               </div>
             </div>
@@ -264,11 +311,17 @@ export default function WorkWorkDetail() {
               <Button size="sm" variant="outline" onClick={handleClose}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              {!wantToDelete ? 
+                <Button size="sm" onClick={project.id == "null" ? handleCreate : handleUpdate}>
                 Save Changes
               </Button>
+              : 
+                <Button size="sm" variant="danger" onClick={handleDelete}>
+                  Delete
+                </Button>
+              }
             </div>
-          </form>
+          </div>
         </div>
       </Modal>
     </div>

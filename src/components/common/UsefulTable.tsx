@@ -70,8 +70,8 @@ export default function UsefulTable() {
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     <div className="flex flex-col space-y-2">
-                      {project.director.map((director) => (
-                        <span key={director.id}>{director.name}</span>
+                      {project.director.map((director, index) => (
+                        <span key={index}>{director}</span>
                       ))}
                     </div>
                   </TableCell>

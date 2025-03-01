@@ -1,5 +1,3 @@
-import People from "./people.type";
-
 interface Project {
   id: string;
   title: string;
@@ -9,7 +7,7 @@ interface Project {
   brand: string;
   productionCompany: string;
   execusiveProducer: string;
-  director: People[];
+  director: string[];
 };
 
 export default Project;

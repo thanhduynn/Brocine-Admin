@@ -13,23 +13,65 @@ import Input from "@/components/form/input/InputField";
 import { useModal } from "@/hooks/useModal";
 
 export default function HomePageHighlights() {
-  const {highlights, setHomeStore} = useHomeStore();
+  const {highlights, setHomeStore, fAddHighlight, modifyHighlights} = useHomeStore();
+  const [newImageUrl, setNewImageUrl] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const handleOpen = () => {
-
+    openModal();
   };
 
-  const placeholder = [
-    '/images/grid-image/image-04.png',
-    '/images/grid-image/image-01.png',
-    '/images/grid-image/image-05.png',
-    '/images/grid-image/image-03.png',
-    '/images/grid-image/image-02.png',
-  ];
+  const handleClose = () => {
+    closeModal();
+    setNewImageUrl("");
+  };
+
+  const handleSave = async () => {
+    if (newImageUrl === "") {
+      alert("URL cannot be null!");
+      return;
+    }
+
+    if (!isValid) {
+      alert("Please make sure your image display in the preview section!");
+      return;
+    }
+
+    let highlightPayload:Highlight = {
+      id: "",
+      description: "",
+      imageUrl: newImageUrl,
+    }
+
+    const newHighlightId = await fAddHighlight(highlightPayload);
+
+    if (newHighlightId !== null) {
+      highlightPayload.id = newHighlightId;
+      modifyHighlights("add", highlightPayload);
+      alert("Image uploaded successfully!");
+      setNewImageUrl("");
+      closeModal();
+    } else {
+      alert("Failed to upload image!");
+    }
+  };
 
   const fetchData = async () => {
-    // todo!
+    const highlightsRef = collection(database, FIREBASE_BROSCINE, FIREBASE_HOME, FIREBASE_HIGHLIGHTS);
+    const highlightsSnap = await getDocs(highlightsRef);
+
+    const highlightsData = highlightsSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Highlight[];
+
+    setHomeStore('highlights', highlightsData);
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [])
 
   return (
     <div>
@@ -60,6 +102,64 @@ export default function HomePageHighlights() {
             </button>
           </div>
       </div>
+      <Modal isOpen={isOpen} onClose={handleClose} className="max-w-[700px] m-4">
+          <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
+            <div className="px-2 pr-14">
+              <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                Upload your image URL
+              </h4>
+              <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+                Make sure your image load successfully on the preview panel!
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <div className="px-2 overflow-y-auto custom-scrollbar">
+                <div className="flex flex-col space-y-6">
+                  <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                    <div>
+                      <Label>URL</Label>
+                      <Input 
+                        name="name" 
+                        type="text" 
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        value={newImageUrl}
+                        success={isValid}
+                        error={!isValid}
+                        hint={!isValid ? "This is an invalid URL!" : "Ready to upload!"}
+                        placeholder="https://external-url.com"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Preview</Label>
+                    <div className="relative">
+                      <div className="overflow-hidden">
+                        <img
+                          src={newImageUrl === "" ? "/" : newImageUrl}
+                          alt="Invalid image url, please try again!"
+                          className="w-full border border-gray-200 rounded-xl dark:border-gray-800"
+                          width={1054}
+                          height={600}
+                          onError={() => setIsValid(false)}
+                          onLoad={() => setIsValid(true)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+              <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+                <Button size="sm" variant="outline" onClick={handleClose}>
+                  Close
+                </Button>
+                <Button size="sm" onClick={handleSave} disabled={!isValid}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Modal>
     </div>
   </div>
   );

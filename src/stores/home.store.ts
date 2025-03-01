@@ -58,17 +58,66 @@ export const useHomeStore = create<HomeStore>()((set, get) => ({
     })
   },
   fAddHighlight: async (highlight) => {
-    const highlightsRef = collection(database, FIREBASE_BROSCINE, FIREBASE_HOME, FIREBASE_HIGHLIGHTS);
+    const highlightsCollectionRef = collection(database, FIREBASE_BROSCINE, FIREBASE_HOME, FIREBASE_HIGHLIGHTS);
     
     try {
-      await addDoc(highlightsRef, {
+      const highlightRef = await addDoc(highlightsCollectionRef, {
         imageUrl: highlight.imageUrl,
         description: highlight.description != "" ? highlight.description : "No description",
+      });
+      return highlightRef.id;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+  modifyBrands(action, brand) {
+    set((state) => {
+      if (action === "add") {
+        return { brands: [...state.brands, brand] };
+      }
+
+      if (action === "update") {
+        set({
+          brands: get().brands.map((oldBrand) => 
+            oldBrand.id === brand.id ? brand : oldBrand
+          ),
+        });
+      }
+
+      if (action === "delete") {
+        return { brands: state.brands.filter((t) => t.id != brand.id) };
+      }
+      
+      return state;
+    });
+  },
+  fAddBrand: async (newBrand) => {
+    const brandCollectionRef = collection(database, FIREBASE_BROSCINE, FIREBASE_HOME, FIREBASE_BRANDS);
+
+    try {
+      const brandRef = await addDoc(brandCollectionRef, {
+        name: newBrand.name,
+        logoUrl: newBrand.logoUrl,
+      });
+      return brandRef.id;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+  fUpdateBrand: async (newBrand) => {
+    const brandRef = doc(database, FIREBASE_BROSCINE, FIREBASE_HOME, FIREBASE_BRANDS, newBrand.id);
+    
+    try {
+      await updateDoc(brandRef, {
+        logoUrl: newBrand.logoUrl,
+        name: newBrand.name,
       });
       return true;
     } catch (error) {
       console.error(error);
       return false;
     }
-  }
+  },
 }));

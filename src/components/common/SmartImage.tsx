@@ -14,10 +14,15 @@ interface SmartImageProps {
 export default function SmartImage({ image, docRef }: SmartImageProps) {
   const [error, setError] = useState(false);
   const [hover, setHover] = useState(false);
+  const { modifyHighlights } = useHomeStore();
 
   const removeSelf = async () => {
     try {
-      // await deleteDoc(docRef);
+      if (!confirm("Are you sure to delete this image?")) {
+        return;
+      } else {
+        await deleteDoc(docRef);
+        modifyHighlights("delete", image);
       alert("Deleted image successfully!");
     } catch (error) {
       console.error(error);

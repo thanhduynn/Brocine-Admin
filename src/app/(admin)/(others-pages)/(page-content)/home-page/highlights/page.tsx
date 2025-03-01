@@ -1,9 +1,16 @@
 "use client"
 import ImageGrid from "@/components/common/ImageGrid";
-import SmartImage from "@/components/common/SmartImage";
-import ThreeColumnImageGrid from "@/components/ui/images/ThreeColumnImageGrid";
 import { useHomeStore } from "@/stores/home.store";
-import { useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { database } from "../../../../../../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_HIGHLIGHTS, FIREBASE_HOME } from "@/constants/firebase";
+import Highlight from "@/types/highlight.type";
+import { Modal } from "@/components/ui/modal";
+import Button from "@/components/ui/button/Button";
+import Label from "@/components/form/Label";
+import Input from "@/components/form/input/InputField";
+import { useModal } from "@/hooks/useModal";
 
 export default function HomePageHighlights() {
   const {highlights, setHomeStore} = useHomeStore();
@@ -31,7 +38,7 @@ export default function HomePageHighlights() {
           Home Page - Highlights
         </h3>
         <div className="space-y-6">
-          <ImageGrid imageUrls={placeholder}/>
+          <ImageGrid images={highlights} collectionName={FIREBASE_HOME}/>
           <div className="flex justify-end">
             <button
               onClick={handleOpen}

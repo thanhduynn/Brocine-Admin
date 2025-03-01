@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { deleteDoc, DocumentReference, DocumentData } from "firebase/firestore";
 import { Eye, Trash } from "lucide-react"; // Icons for buttons
+import { useHomeStore } from "@/stores/home.store";
+import Highlight from "@/types/highlight.type";
 
 interface SmartImageProps {
-  imageUrl: string;
-  docRef?: DocumentReference<DocumentData, DocumentData>;
+  image: Highlight;
+  docRef: DocumentReference<DocumentData, DocumentData>;
 }
 
-export default function SmartImage({ imageUrl, docRef }: SmartImageProps) {
+export default function SmartImage({ image, docRef }: SmartImageProps) {
   const [error, setError] = useState(false);
   const [hover, setHover] = useState(false);
 
@@ -45,7 +47,7 @@ export default function SmartImage({ imageUrl, docRef }: SmartImageProps) {
           {/* View button */}
           <button
             className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 transition"
-            onClick={() => window.open(imageUrl, "_blank")}
+            onClick={() => window.open(image.imageUrl, "_blank")}
           >
             <Eye size={16} />
           </button>

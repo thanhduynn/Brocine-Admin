@@ -2,13 +2,15 @@ import { DEFAULT_HERO_IMAGE } from "@/constants/images";
 import HeroSection from "@/types/hero.type";
 import { create } from "zustand";
 import Highlight from "@/types/highlight.type";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { database } from "../../firebase";
-import { FIREBASE_BROSCINE, FIREBASE_HIGHLIGHTS, FIREBASE_HOME } from "@/constants/firebase";
+import { FIREBASE_BRANDS, FIREBASE_BROSCINE, FIREBASE_HIGHLIGHTS, FIREBASE_HOME } from "@/constants/firebase";
+import Brand from "@/types/brand.type";
 
 interface HomeStore {
   content: HeroSection;
   highlights: Highlight[];
+  brands: Brand[];
   setHomeStore: <T extends keyof HomeStore>(
     key: T,
     value: HomeStore[T],
@@ -21,7 +23,13 @@ interface HomeStore {
     action: "add" | "delete",
     highlight: Highlight, 
   ) => void; 
-  fAddHighlight: (highlight: Highlight) => Promise<boolean>;
+  modifyBrands: (
+    action: "add" | "update" | "delete",
+    brand: Brand,
+  ) => void;
+  fAddHighlight: (highlight: Highlight) => Promise<string | null>;
+  fAddBrand: (newBrand: Brand) => Promise<string | null>;
+  fUpdateBrand: (newBrand: Brand) => Promise<boolean>;
 }
 
 export const useHomeStore = create<HomeStore>()((set, get) => ({
@@ -31,6 +39,7 @@ export const useHomeStore = create<HomeStore>()((set, get) => ({
     imageUrl: DEFAULT_HERO_IMAGE
   },
   highlights: [],
+  brands: [],
   setContent(key, value) {
     set({
       content: {

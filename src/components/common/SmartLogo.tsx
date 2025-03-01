@@ -1,42 +1,80 @@
-"use client"
-import LogoGrid from "@/components/common/LogoGrid";
-import { collection, getDocs } from "firebase/firestore";
-import { database } from "../../../../../../../firebase";
-import { FIREBASE_BRANDS, FIREBASE_BROSCINE, FIREBASE_HOME } from "@/constants/firebase";
+"use client";
+
 import { useEffect, useState } from "react";
+import { deleteDoc, DocumentReference, DocumentData } from "firebase/firestore";
+import { Edit, Trash } from "lucide-react"; // Icons for buttons
 import { useHomeStore } from "@/stores/home.store";
 import Brand from "@/types/brand.type";
-import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
-import Label from "@/components/form/Label";
-import Input from "@/components/form/input/InputField";
-import Button from "@/components/ui/button/Button";
+import { Modal } from "../ui/modal";
+import Label from "../form/Label";
+import Input from "../form/input/InputField";
+import Button from "../ui/button/Button";
 
-export default function HomePageBrands() {
-  const { brands, setHomeStore, fAddBrand, modifyBrands } = useHomeStore();
-  const { isOpen, closeModal, openModal } = useModal();
+interface SmartLogoProps {
+  logo: Brand;
+  docRef: DocumentReference<DocumentData, DocumentData>;
+}
+
+export default function SmartLogo({ logo, docRef }: SmartLogoProps) {
+  const [error, setError] = useState(false);
+  const [hover, setHover] = useState(false);
+
+  const [isValidUrl, setIsValidUrl] = useState(true);
+  const [isValidName, setIsValidName] = useState(true);
+  const [newLogoUrl, setNewLogoUrl] = useState(logo.logoUrl);
+  const [newLogoName, setNewLogoName] = useState(logo.name);
   
-  const [isCreate, setIsCreate] = useState(false);
-  const [isValidUrl, setIsValidUrl] = useState(false);
-  const [isValidName, setIsValidName] = useState(false);
-  const [newLogoUrl, setNewLogoUrl] = useState("");
-  const [newLogoName, setNewLogoName] = useState("");
+  const { isOpen, openModal, closeModal } = useModal();
+  const [ isUpdate, setIsUpdate ] = useState(false);
+  
+  const { modifyBrands, fUpdateBrand } = useHomeStore();
 
-  const fetchData = async () => {
-    const brandsCollectionRef = collection(database, FIREBASE_BROSCINE, FIREBASE_HOME, FIREBASE_BRANDS);
-    const brandsSnap = await getDocs(brandsCollectionRef);
-
-    const brandsData = brandsSnap.docs.map((brand) => ({
-      id: brand.id,
-      ...brand.data(),
-    })) as Brand[];
-
-    setHomeStore("brands", brandsData);
+  const removeSelf = async () => {
+    try {
+      if (!confirm("Are you sure to delete this logo?")) {
+        return;
+      } else {
+        await deleteDoc(docRef);
+        modifyBrands("delete", logo);
+        alert("Deleted logo successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete logo!");
+    }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const handleOpen = () => {
+    openModal();
+    setIsUpdate(true);
+  };
+
+  const handleClose = () => {
+    closeModal();
+    setIsUpdate(false);
+  };
+
+  const handleSave = async () => {
+    const brandPayload:Brand = {
+      id: logo.id,
+      name: newLogoName,
+      logoUrl: newLogoUrl,
+    };
+    
+    try {
+      if (await fUpdateBrand(brandPayload)) {
+        alert("Brand updated successfully!");
+        modifyBrands("update", brandPayload);
+        handleClose();
+      } else {
+        alert("Failed to update brand!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update brand!");
+    }
+  };
 
   useEffect(() => {
     if (newLogoName == "") {
@@ -46,70 +84,42 @@ export default function HomePageBrands() {
     }
   }, [newLogoName]);
 
-  const handleOpen = () => {
-    openModal();
-    setIsCreate(true);
-  };
-
-  const handleClose = () => {
-    closeModal();
-    setIsCreate(false);
-    setNewLogoUrl("");
-    setNewLogoName("");
-  }
-
-  const handleSave = async () => {
-    let brandPayload:Brand = {
-      id: "",
-      name: newLogoName,
-      logoUrl: newLogoUrl,
-    }
-    try {
-      const brandRefId = await fAddBrand(brandPayload);
-      if (brandRefId !== null) {
-        brandPayload.id = brandRefId;
-        modifyBrands("add", brandPayload);
-        alert("Brand created successfully!");
-        handleClose();
-      } else {
-        alert("Failed to create new brand!");
-      }
-    } catch (error) {
-      alert("Failed to create new brand!");
-    }
-  };
-  
   return (
-    <div>
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-        <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-7">
-          Home Page - Brands
-        </h3>
-        <div className="flex flex-col space-y-6">
-          <LogoGrid brands={brands} collectionName={FIREBASE_BRANDS}/>
-          <div className="flex justify-end">
-            <button
-              onClick={handleOpen}
-              className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12 4.5a.75.75 0 0 1 .75.75V11.25H19.5a.75.75 0 0 1 0 1.5H12.75V19.5a.75.75 0 0 1-1.5 0V12.75H4.5a.75.75 0 0 1 0-1.5H11.25V5.25A.75.75 0 0 1 12 4.5z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Add an image
-            </button>
-          </div>
+    <div
+      className="relative group overflow-hidden rounded-lg border border-gray-300 flex justify-center h-60"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <img
+        src={logo.logoUrl}
+        alt="Preview"
+        className="object-cover w-full bg-gray-300 dark:bg-black"
+        onError={() => setError(true)}
+        loading="lazy"
+      />
+
+      {/* Buttons (hidden until hover) */}
+      {hover && (
+        <div className="absolute inset-0 bg-white/50 dark:bg-white/50 flex items-center justify-center space-x-2">
+          {/* View button */}
+          <button
+            className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 transition"
+            onClick={handleOpen}
+          >
+            <Edit size={16} />
+          </button>
+
+          {/* Delete button */}
+          <button
+            className="bg-red-500 p-2 rounded-full shadow-lg text-white hover:bg-red-600 transition"
+            onClick={removeSelf}
+          >
+            <Trash size={16} />
+          </button>
         </div>
-      </div>
-      <Modal isOpen={isOpen && isCreate} onClose={handleClose} className="max-w-[700px] m-4">
+      )}
+
+        <Modal isOpen={isOpen && isUpdate} onClose={handleClose} className="max-w-[700px] m-4">
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">

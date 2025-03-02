@@ -22,7 +22,7 @@ export default function ResponsiveView({
         Preview
       </h4>
       <div className="relative">
-        <Image
+        <img
           src={image}
           alt="Cover"
           className="w-full border border-gray-200 rounded-xl dark:border-gray-800"
@@ -32,7 +32,7 @@ export default function ResponsiveView({
         />
         {/* Overlay Container */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <h1 className="text-4xl font-bold text-white drop-shadow-lg">{title}</h1>
+          <h1 className="text-5xl font-bold text-white drop-shadow-lg">{title}</h1>
           <h3 className="text-xl text-white drop-shadow-lg w-4/5">{subtitle}</h3>
         </div>
       </div>

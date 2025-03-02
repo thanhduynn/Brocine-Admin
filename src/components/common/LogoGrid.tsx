@@ -1,6 +1,6 @@
 import { doc } from "firebase/firestore";
 import { database } from "../../../firebase";
-import { FIREBASE_BRANDS, FIREBASE_BROSCINE } from "@/constants/firebase";
+import { FIREBASE_BRANDS, FIREBASE_BROSCINE, FIREBASE_HOME } from "@/constants/firebase";
 import Brand from "@/types/brand.type";
 import SmartLogo from "./SmartLogo";
 
@@ -17,7 +17,7 @@ export default function LogoGrid({brands, collectionName}: ImageGridProps) {
           <SmartLogo 
             logo={brand}
             key={brand.id} 
-            docRef={doc(database, FIREBASE_BROSCINE, collectionName, FIREBASE_BRANDS, brand.id)}
+            docRef={doc(database, FIREBASE_BROSCINE, FIREBASE_HOME, collectionName, brand.id)}
           />
         );
       })}

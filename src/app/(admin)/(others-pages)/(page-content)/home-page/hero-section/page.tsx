@@ -4,18 +4,24 @@ import ResponsiveView from "@/components/common/ResponsiveView";
 import HeroSection from "@/types/hero.type";
 import { useHomeStore } from "@/stores/home.store";
 import { useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { database } from "../../../../../../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_HERO, FIREBASE_HOME } from "@/constants/firebase";
 
 export default function HomePageHeroSection() {
-  const placeholder: HeroSection = {
-    title: "AI. Consulting. Development. Maintenance.",
-    subtitle: "Vietnam's AI experts. We provide top-tier AI consulting services and develop innovative AI products. Let's build the future, together. Get in touch to explore the possibilities!",
-    imageUrl: "/images/grid-image/image-02.png",
-  }
+  const { content, setContent, setHomeStore, fUpdateHeroSection } = useHomeStore();
 
-  const { content, setContent, setHomeStore } = useHomeStore();
+  const fetchData = async () => {
+    const heroSectionRef = doc(database, FIREBASE_BROSCINE, FIREBASE_HOME);
+    const docSnap = await getDoc(heroSectionRef);
+    if (docSnap.exists()) { 
+      const data = docSnap.data()[FIREBASE_HERO] as HeroSection;
+      setHomeStore('content', data);
+    };
+  };
 
   useEffect(() => {
-    setHomeStore('content', placeholder);
+    fetchData();
   }, []);
   
   return (
@@ -32,6 +38,7 @@ export default function HomePageHeroSection() {
               content: content,
               setContent: setContent,
               setStore: setHomeStore,
+              updateContent: fUpdateHeroSection,
             }}
 
           />

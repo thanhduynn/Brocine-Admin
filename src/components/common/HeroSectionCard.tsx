@@ -11,6 +11,7 @@ interface GenericStore {
   content: HeroSection;
   setContent: (key: any, value: any) => void;
   setStore: (key: any, value: any) => void;
+  updateContent: (content: HeroSection) => Promise<boolean>;
 }
 
 interface HeroSectionCardProps {
@@ -19,8 +20,9 @@ interface HeroSectionCardProps {
 
 export default function HeroSectionCard({ store }: HeroSectionCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
-  const { content, setContent, setStore } = store;
+  const { content, setContent, setStore, updateContent } = store;
   const [ currentContent, setCurrentContent ] = useState<HeroSection>();
+  const [ isValid, setIsValid ] = useState(true);
 
   const handleOpen = () => {
     setCurrentContent(content);
@@ -30,14 +32,18 @@ export default function HeroSectionCard({ store }: HeroSectionCardProps) {
   const handleClose = () => {
     if (currentContent) {
       setStore('content', currentContent);
-      closeModal();
     }
+    closeModal();
   }
 
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const handleSave = async () => {
+    if (await updateContent(content)) {
+      alert("Changes saved successfully!");
+      closeModal();
+    } else {
+      alert("Failed to save changes. Please try again later.");
+      return;
+    }
   };
 
   const handleChangeInput = useCallback(
@@ -120,7 +126,7 @@ export default function HeroSectionCard({ store }: HeroSectionCardProps) {
               Update your content to keep your landing page up-to-date.
             </p>
           </div>
-          <form className="flex flex-col">
+          <div className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
@@ -135,9 +141,33 @@ export default function HeroSectionCard({ store }: HeroSectionCardProps) {
 
                 <div>
                   <Label>Image URL</Label>
-                  <Input name="imageUrl" type="text" onChange={handleChangeInput} value={content.imageUrl}/>
+                  <Input 
+                    name="imageUrl" 
+                    type="text" 
+                    onChange={handleChangeInput} 
+                    value={content.imageUrl}
+                    success={isValid}
+                    error={!isValid}
+                    hint={isValid ? 'Ready to go!' : 'Invalid image URL'}
+                  />
                 </div>
               </div>
+              <div>
+                    <Label>Preview</Label>
+                    <div className="relative">
+                      <div className="overflow-hidden">
+                        <img
+                          src={content.imageUrl === "" ? "/" : content.imageUrl}
+                          alt="Invalid image url, please try again!"
+                          className="w-full border border-gray-200 rounded-xl dark:border-gray-800"
+                          width={1054}
+                          height={600}
+                          onError={() => setIsValid(false)}
+                          onLoad={() => setIsValid(true)}
+                        />
+                      </div>
+                    </div>
+                  </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={handleClose}>
@@ -147,7 +177,7 @@ export default function HeroSectionCard({ store }: HeroSectionCardProps) {
                 Save Changes
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </Modal>
     </>

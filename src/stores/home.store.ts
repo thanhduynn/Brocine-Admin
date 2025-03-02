@@ -30,6 +30,7 @@ interface HomeStore {
   fAddHighlight: (highlight: Highlight) => Promise<string | null>;
   fAddBrand: (newBrand: Brand) => Promise<string | null>;
   fUpdateBrand: (newBrand: Brand) => Promise<boolean>;
+  fUpdateHeroSection: () => Promise<boolean>;
 }
 
 export const useHomeStore = create<HomeStore>()((set, get) => ({
@@ -122,6 +123,21 @@ export const useHomeStore = create<HomeStore>()((set, get) => ({
       await updateDoc(brandRef, {
         logoUrl: newBrand.logoUrl,
         name: newBrand.name,
+      });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+  fUpdateHeroSection: async () => {
+    const heroSectionRef = doc(database, FIREBASE_BROSCINE, FIREBASE_HOME);
+    
+    try {
+      const newHeroSection = get().content;
+
+      await updateDoc(heroSectionRef, {
+        heroSection: newHeroSection,
       });
       return true;
     } catch (error) {

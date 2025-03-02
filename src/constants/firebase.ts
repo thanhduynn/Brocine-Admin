@@ -11,3 +11,4 @@ export const FIREBASE_HIGHLIGHTS="highlights";
 export const FIREBASE_BRANDS="brand";
 export const FIREBASE_CATEGORIES="category";
 export const FIREBASE_PROJECTS="project";
+export const FIREBASE_HERO="heroSection";

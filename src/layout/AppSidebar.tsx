@@ -62,7 +62,7 @@ const navItems: NavItem[] = [
     name: "Contacts",
     path: "/contact",
   },
-];
+]
 
 const othersItems: NavItem[] = [
   {
@@ -316,22 +316,22 @@ const AppSidebar: React.FC = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/viemind-light.svg"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={60}
+                height={60}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/viemind.svg"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={60}
+                height={60}
               />
             </>
           ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
+              src="/images/logo/viemind.svg"
               alt="Logo"
               width={32}
               height={32}

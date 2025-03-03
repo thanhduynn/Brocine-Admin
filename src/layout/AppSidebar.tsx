@@ -5,12 +5,10 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  BoltIcon,
-  BoxCubeIcon, ChevronDownIcon, FileIcon, HorizontaLDots,
-  InfoIcon,
-  ListIcon,
-  PageIcon, PaperPlaneIcon, TableIcon
+  BoxCubeIcon, ChevronDownIcon, HorizontaLDots, ListIcon,
+  PageIcon, TableIcon
 } from "../icons/index";
+import { Binary, Box, BriefcaseBusiness, House, Info, ScrollText } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -21,12 +19,12 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <HorizontaLDots />,
+    icon: <Binary />,
     name: "Metadata",
     path: "/metadata",
   },
   {
-    icon: <PaperPlaneIcon />,
+    icon: <House />,
     name: "Home Page",
     subItems: [
       { name: "Hero Section", path: "/home-page/hero-section", pro: false },
@@ -35,7 +33,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <BoltIcon />,
+    icon: <BriefcaseBusiness />,
     name: "Work Page",
     subItems: [
       { name: "Categories", path: "/work/categories", pro: false },
@@ -43,7 +41,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <InfoIcon />,
+    icon: <Info />,
     name: "About Page",
     subItems: [
       { name: "Hero Section", path: "/about-page/hero-section", pro: false },
@@ -51,7 +49,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <BoxCubeIcon />,
+    icon: <Box />,
     name: "Product Services",
     subItems: [
       { name: "Hero Section", path: "/product-services/hero-section", pro: false },
@@ -60,7 +58,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <PageIcon />,
+    icon: <ScrollText />,
     name: "Policies",
     subItems: [
       { name: "Private Policy", path: "/policies/private", pro: false },

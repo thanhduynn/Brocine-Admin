@@ -1,6 +1,9 @@
 import { DEFAULT_HERO_IMAGE } from "@/constants/images";
 import HeroSection from "@/types/hero.type";
+import { doc, updateDoc } from "firebase/firestore";
 import { create } from "zustand";
+import { database } from "../../firebase";
+import { FIREBASE_ABOUT, FIREBASE_BROSCINE } from "@/constants/firebase";
 
 interface AboutStore {
   content: HeroSection;
@@ -12,6 +15,7 @@ interface AboutStore {
     key: K,
     value: AboutStore['content'][K],
   ) => void;
+  fUpdateHeroSection: () => Promise<boolean>;
 }
 
 export const useAboutStore = create<AboutStore>()((set, get) => ({
@@ -32,5 +36,20 @@ export const useAboutStore = create<AboutStore>()((set, get) => ({
         [key]: value,
       }
     })
+  },
+  fUpdateHeroSection: async () => {
+    const heroSectionRef = doc(database, FIREBASE_BROSCINE, FIREBASE_ABOUT);
+    
+    try {
+      const newHeroSection = get().content;
+
+      await updateDoc(heroSectionRef, {
+        heroSection: newHeroSection,
+      });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   },
 }));

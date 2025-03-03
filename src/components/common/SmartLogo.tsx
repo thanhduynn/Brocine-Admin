@@ -10,6 +10,7 @@ import { Modal } from "../ui/modal";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
+import Image from "next/image";
 
 interface SmartLogoProps {
   logo: Brand;
@@ -90,12 +91,14 @@ export default function SmartLogo({ logo, docRef }: SmartLogoProps) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <img
+      <Image
         src={logo.logoUrl}
         alt="Preview"
         className="object-cover w-full bg-gray-300 dark:bg-black"
         onError={() => setError(true)}
         loading="lazy"
+        width={302}
+        height={190}
       />
 
       {/* Buttons (hidden until hover) */}
@@ -164,7 +167,7 @@ export default function SmartLogo({ logo, docRef }: SmartLogoProps) {
                   <Label>Preview</Label>
                   <div className="relative">
                     <div className="overflow-hidden">
-                      <img
+                      <Image
                         src={newLogoUrl === "" ? "/" : newLogoUrl}
                         alt="Invalid image url, please try again!"
                         className="w-full border border-gray-200 rounded-xl dark:border-white bg-gray-300 dark:bg-black"

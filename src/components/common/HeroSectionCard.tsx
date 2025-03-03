@@ -6,6 +6,7 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import HeroSection from "@/types/hero.type";
+import Image from "next/image";
 
 interface GenericStore {
   content: HeroSection;
@@ -156,7 +157,7 @@ export default function HeroSectionCard({ store }: HeroSectionCardProps) {
                     <Label>Preview</Label>
                     <div className="relative">
                       <div className="overflow-hidden">
-                        <img
+                        <Image
                           src={content.imageUrl === "" ? "/" : content.imageUrl}
                           alt="Invalid image url, please try again!"
                           className="w-full border border-gray-200 rounded-xl dark:border-gray-800"

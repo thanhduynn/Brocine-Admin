@@ -11,6 +11,7 @@ import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import { useModal } from "@/hooks/useModal";
+import Image from "next/image";
 
 export default function HomePageHighlights() {
   const {highlights, setHomeStore, fAddHighlight, modifyHighlights} = useHomeStore();
@@ -134,7 +135,7 @@ export default function HomePageHighlights() {
                     <Label>Preview</Label>
                     <div className="relative">
                       <div className="overflow-hidden">
-                        <img
+                        <Image
                           src={newImageUrl === "" ? "/" : newImageUrl}
                           alt="Invalid image url, please try again!"
                           className="w-full border border-gray-200 rounded-xl dark:border-gray-800"

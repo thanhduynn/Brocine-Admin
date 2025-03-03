@@ -22,7 +22,7 @@ export default function ResponsiveView({
         Preview
       </h4>
       <div className="relative">
-        <img
+        <Image
           src={image}
           alt="Cover"
           className="w-full border border-gray-200 rounded-xl dark:border-gray-800"

@@ -5,6 +5,7 @@ import { deleteDoc, DocumentReference, DocumentData } from "firebase/firestore";
 import { Eye, Trash } from "lucide-react"; // Icons for buttons
 import { useHomeStore } from "@/stores/home.store";
 import Highlight from "@/types/highlight.type";
+import Image from "next/image";
 
 interface SmartImageProps {
   image: Highlight;
@@ -37,12 +38,14 @@ export default function SmartImage({ image, docRef }: SmartImageProps) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <img
+      <Image
         src={error ? "/images/grid-image/image-01.png" : image.imageUrl}
         alt="Preview"
         className="object-cover w-full"
         onError={() => setError(true)}
         loading="lazy"
+        width={302}
+        height={192}
       />
 
       {/* Buttons (hidden until hover) */}

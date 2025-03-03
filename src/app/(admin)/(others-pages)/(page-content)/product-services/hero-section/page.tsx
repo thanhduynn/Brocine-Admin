@@ -4,18 +4,24 @@ import { useServiceStore } from "@/stores/service.store";
 import ResponsiveView from "@/components/common/ResponsiveView";
 import HeroSectionCard from "@/components/common/HeroSectionCard";
 import { useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { database } from "../../../../../../../firebase";
+import { FIREBASE_BROSCINE, FIREBASE_HERO, FIREBASE_SERVICES } from "@/constants/firebase";
 
 export default function ProductServicesHeroSection() {
-  const placeholder: HeroSection = {
-    title: "AI. Consulting. Development. Maintenance.",
-    subtitle: "Your AI partner for success. We specialize in AI strategy, development, and deployment to bring your ideas to life. Contact us today to start your AI journey!",
-    imageUrl: "/images/grid-image/image-03.png",
+  const { content, setContent, setServiceStore, fUpdateHeroSection } = useServiceStore();
+
+  const fetchData = async () => {
+    const heroSectionRef = doc(database, FIREBASE_BROSCINE, FIREBASE_SERVICES);
+    const docSnap = await getDoc(heroSectionRef);
+    if (docSnap.exists()) { 
+      const data = docSnap.data()[FIREBASE_HERO] as HeroSection;
+      setServiceStore('content', data);
+    };
   };
 
-  const { content, setContent, setServiceStore } = useServiceStore();
-
   useEffect(() => {
-    setServiceStore('content', placeholder);
+    fetchData();
   }, []);
 
   return (
@@ -32,6 +38,7 @@ export default function ProductServicesHeroSection() {
               content: content,
               setContent: setContent,
               setStore: setServiceStore,
+              updateContent: fUpdateHeroSection,
             }}
           />
           <ResponsiveView 

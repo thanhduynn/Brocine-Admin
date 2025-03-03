@@ -6,13 +6,13 @@ import HeroSectionCard from "@/components/common/HeroSectionCard";
 import { useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { database } from "../../../../../../../firebase";
-import { FIREBASE_BROSCINE, FIREBASE_HERO, FIREBASE_SERVICES } from "@/constants/firebase";
+import { FIREBASE_BROSCINE, FIREBASE_HERO, FIREBASE_SERVICES_COLL } from "@/constants/firebase";
 
 export default function ProductServicesHeroSection() {
   const { content, setContent, setServiceStore, fUpdateHeroSection } = useServiceStore();
 
   const fetchData = async () => {
-    const heroSectionRef = doc(database, FIREBASE_BROSCINE, FIREBASE_SERVICES);
+    const heroSectionRef = doc(database, FIREBASE_BROSCINE, FIREBASE_SERVICES_COLL);
     const docSnap = await getDoc(heroSectionRef);
     if (docSnap.exists()) { 
       const data = docSnap.data()[FIREBASE_HERO] as HeroSection;

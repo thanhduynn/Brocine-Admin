@@ -8,7 +8,7 @@ import {
   BoxCubeIcon, ChevronDownIcon, HorizontaLDots, ListIcon,
   PageIcon, TableIcon
 } from "../icons/index";
-import { Binary, Box, BriefcaseBusiness, House, Info, ScrollText } from "lucide-react";
+import { Binary, Box, BriefcaseBusiness, House, Info, MessageSquareMore } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -58,12 +58,9 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <ScrollText />,
-    name: "Policies",
-    subItems: [
-      { name: "Private Policy", path: "/policies/private", pro: false },
-      { name: "Refund Policy", path: "/policies/refund", pro: false },
-    ],
+    icon: <MessageSquareMore />,
+    name: "Contacts",
+    path: "/contact",
   },
 ];
 

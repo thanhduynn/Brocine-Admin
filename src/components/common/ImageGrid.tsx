@@ -6,10 +6,11 @@ import { FIREBASE_BROSCINE, FIREBASE_HIGHLIGHTS } from "@/constants/firebase";
 
 interface ImageGridProps {
   images: Highlight[];
-  collectionName: string; 
+  collectionName: string;
+  modifyHighlight: (action: "add" | "delete", image: Highlight) => void;
 }
 
-export default function ImageGrid({images, collectionName}: ImageGridProps) {
+export default function ImageGrid({images, collectionName, modifyHighlight}: ImageGridProps) {
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
       {images.map((image) => {
@@ -18,6 +19,7 @@ export default function ImageGrid({images, collectionName}: ImageGridProps) {
             image={image}
             key={image.id} 
             docRef={doc(database, FIREBASE_BROSCINE, collectionName, FIREBASE_HIGHLIGHTS, image.id)}
+            modifyHighlights={modifyHighlight}
           />
         );
       })}

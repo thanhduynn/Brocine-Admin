@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { deleteDoc, DocumentReference, DocumentData } from "firebase/firestore";
 import { Eye, Trash } from "lucide-react"; // Icons for buttons
-import { useHomeStore } from "@/stores/home.store";
 import Highlight from "@/types/highlight.type";
 import Image from "next/image";
 
 interface SmartImageProps {
   image: Highlight;
   docRef: DocumentReference<DocumentData, DocumentData>;
+  modifyHighlights: (action: "add" | "delete", image: Highlight) => void;
 }
 
-export default function SmartImage({ image, docRef }: SmartImageProps) {
+export default function SmartImage({ image, docRef, modifyHighlights }: SmartImageProps) {
   const [error, setError] = useState(false);
   const [hover, setHover] = useState(false);
-  const { modifyHighlights } = useHomeStore();
 
   const removeSelf = async () => {
     try {

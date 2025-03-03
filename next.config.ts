@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
+  images: {
+    domains: ['i.imgur.com', 'tinypic.host'],
+  },
 };
 
 export default nextConfig;

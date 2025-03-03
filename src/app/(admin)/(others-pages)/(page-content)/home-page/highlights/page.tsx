@@ -81,7 +81,7 @@ export default function HomePageHighlights() {
           Home Page - Highlights
         </h3>
         <div className="space-y-6">
-          <ImageGrid images={highlights} collectionName={FIREBASE_HOME}/>
+          <ImageGrid images={highlights} collectionName={FIREBASE_HOME} modifyHighlight={modifyHighlights}/>
           <div className="flex justify-end">
             <button
               onClick={handleOpen}
